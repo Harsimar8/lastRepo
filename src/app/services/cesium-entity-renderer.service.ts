@@ -168,9 +168,9 @@ private drawSamCoverage(
         ellipsoid: {
 
             radii: new Cesium.Cartesian3(
-    searchRange * 0.6,
-    searchRange * 0.6,
-    searchRange * 0.6
+    searchRange ,
+    searchRange ,
+    searchRange 
 ),
 
             maximumCone: Cesium.Math.PI_OVER_TWO,
@@ -192,54 +192,151 @@ private drawRadarSector(
     searchRange: number
 ): void {
 
-    const heading = entity.properties?.["radarHeading"] ?? 0;
-    const beamWidth = entity.properties?.["beamWidth"] ?? 40;
+    const scanCenter =
+        Number(entity.properties?.["scanCenter"] ?? 0);
 
-    const positions: Cesium.Cartesian3[] = [];
 
-    // Center point
-    positions.push(
-        Cesium.Cartesian3.fromDegrees(
-            entity.position.longitude,
-            entity.position.latitude,
-            searchRange * 0.15
-        )
-    );
+    const scanWidth =
+        Number(entity.properties?.["scanWidth"] ?? 120);
 
-    const start = heading - beamWidth / 2;
-    const end = heading + beamWidth / 2;
 
-    for (let angle = start; angle <= end; angle += 2) {
 
-        const rad = Cesium.Math.toRadians(angle);
+    const hierarchy =
+    new Cesium.CallbackProperty(() => {
 
-        const dLat =
-            (searchRange * 0.6 * Math.cos(rad)) / 111320;
 
-        const dLon =
-            (searchRange * 0.6 * Math.sin(rad)) /
-            (111320 * Math.cos(
-                Cesium.Math.toRadians(entity.position.latitude)
-            ));
+        const positions: Cesium.Cartesian3[] = [];
+
+
+        const time =
+            performance.now() / 1000;
+
+
+        const sweep =
+            Math.sin(time) * (scanWidth / 2);
+
+
+
+        const heading =
+            scanCenter + sweep;
+
+
+
+        // Radar center point
 
         positions.push(
             Cesium.Cartesian3.fromDegrees(
-                entity.position.longitude + dLon,
-                entity.position.latitude + dLat,
-                searchRange * 0.15
+                entity.position.longitude,
+                entity.position.latitude,
+                100
             )
         );
-    }
+
+
+
+        const start =
+            heading - scanWidth / 2;
+
+
+        const end =
+            heading + scanWidth / 2;
+
+
+
+        const center =
+            Cesium.Cartographic.fromDegrees(
+                entity.position.longitude,
+                entity.position.latitude
+            );
+
+
+
+        const angularDistance =
+            searchRange / 6371000;
+
+
+
+        for(
+            let angle = start;
+            angle <= end;
+            angle += 2
+        ){
+
+
+            const bearing =
+                Cesium.Math.toRadians(angle);
+
+
+
+            const lat =
+                Math.asin(
+                    Math.sin(center.latitude) *
+                    Math.cos(angularDistance)
+                    +
+                    Math.cos(center.latitude) *
+                    Math.sin(angularDistance) *
+                    Math.cos(bearing)
+                );
+
+
+
+            const lon =
+                center.longitude +
+                Math.atan2(
+                    Math.sin(bearing) *
+                    Math.sin(angularDistance) *
+                    Math.cos(center.latitude),
+                    Math.cos(angularDistance)
+                    -
+                    Math.sin(center.latitude) *
+                    Math.sin(lat)
+                );
+
+
+
+            positions.push(
+                Cesium.Cartesian3.fromRadians(
+                    lon,
+                    lat,
+                    100
+                )
+            );
+
+        }
+
+
+
+        return new Cesium.PolygonHierarchy(
+            positions
+        );
+
+
+    }, false);
+
+
+
 
     viewer.entities.add({
 
+        id:
+        entity.id + "_sector",
+
+
         polygon: {
 
-            hierarchy: positions,
+            hierarchy,
 
-            material: Cesium.Color.LIME.withAlpha(0.55),
 
-            perPositionHeight: true
+            material:
+            Cesium.Color.LIME.withAlpha(0.5),
+
+
+            outline:
+            true,
+
+
+            outlineColor:
+            Cesium.Color.YELLOW
 
         }
 
@@ -295,33 +392,6 @@ private drawRadarSector(
 
 }
 
-private drawRadarCone(
-    viewer: Cesium.Viewer,
-    position: Cesium.Cartesian3,
-    searchRange: number
-): void {
-
-    viewer.entities.add({
-
-        position: position,
-
-        cylinder: {
-
-            length: searchRange * 0.6,
-
-            topRadius: 0,
-
-            bottomRadius: searchRange * 0.15,
-
-            material: Cesium.Color.LIME.withAlpha(0.45),
-
-            outline: false
-
-        }
-
-    });
-
-}
     private createRadarPolygon(
         latitude: number,
         longitude: number,
