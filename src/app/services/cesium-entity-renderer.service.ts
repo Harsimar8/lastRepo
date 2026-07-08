@@ -78,6 +78,7 @@ export class CesiumEntityRendererService {
 
         };
 
+
         if (style.icon) {
 
             cesiumEntity.billboard = {
@@ -155,7 +156,8 @@ this.drawCoverage(
 
 }
 
-private drawSamCoverage(
+
+    private drawSamCoverage(
     viewer: Cesium.Viewer,
     position: Cesium.Cartesian3,
     searchRange: number

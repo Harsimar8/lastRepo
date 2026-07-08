@@ -12,7 +12,8 @@ export class AssetFactory {
     static create(
         asset: Asset,
         latitude: number,
-        longitude: number
+        longitude: number,
+        team?: Team
     ): Entity {
 
         return new GenericEntity(
@@ -29,7 +30,7 @@ export class AssetFactory {
                 asset.properties["altitude"] ?? 0
             ),
 
-            asset.team ?? Team.Blue,
+            asset.team ?? team ?? Team.Blue,
 
             { ...asset.properties }
 

@@ -267,18 +267,22 @@ if (this.assetSelectionService.placing() && selectedAsset) {
   
  
 
-   private placeAsset(asset: any, lat: number, lng: number): void {
+  private placeAsset(asset: any, lat: number, lng: number): void {
 
-    const entity = AssetFactory.create(
-        asset,
-        lat,
-        lng
-    );
+  const selectedTeam = this.filterService.getSelectedTeam();
 
-    this.entityService.addEntity(entity);
+  const entity = AssetFactory.create(
+    asset,
+    lat,
+    lng,
+    selectedTeam
+  );
 
-    console.log("Placed:", entity);
- this.simulationService.selectEntity(entity);
+  this.entityService.addEntity(entity);
+
+  console.log('Placed:', entity);
+  this.simulationService.selectEntity(entity);
+
 }
 
   private redrawEntities(): void {
@@ -392,35 +396,35 @@ if (this.assetSelectionService.placing() && selectedAsset) {
                 ).addTo(this.markers);
             }
         } else if (entity.type === EntityType.SamBattery) {
-            const searchRange =
-                entity.properties?.['searchRange'] ??
-                Math.sqrt(entity.properties?.['engagementRangeSqr'] ?? 0);
-            if (searchRange > 0) {
-                L.circle(
-                    [entity.position.latitude, entity.position.longitude],
-                    {
-                        radius: searchRange,
-                        color: 'blue',
-                        weight: 2,
-                        fillColor: 'blue',
-                        fillOpacity: 0.15
-                    }
-                ).addTo(this.markers);
+          const searchRange =
+            entity.properties?.['searchRange'] ??
+            Math.sqrt(entity.properties?.['engagementRangeSqr'] ?? 0);
+          if (searchRange > 0) {
+            L.circle(
+              [entity.position.latitude, entity.position.longitude],
+              {
+                radius: searchRange,
+                color: 'blue',
+                weight: 2,
+                fillColor: 'blue',
+                fillOpacity: 0.15
+              }
+            ).addTo(this.markers);
 
-                const rings = 5;
-                for (let i = 1; i <= rings; i++) {
-                    L.circle(
-                        [entity.position.latitude, entity.position.longitude],
-                        {
-                            radius: (searchRange / rings) * i,
-                            color: 'blue',
-                            weight: 1,
-                            fill: false,
-                            opacity: 0.8
-                        }
-                    ).addTo(this.markers);
+            const rings = 5;
+            for (let i = 1; i <= rings; i++) {
+              L.circle(
+                [entity.position.latitude, entity.position.longitude],
+                {
+                  radius: (searchRange / rings) * i,
+                  color: 'blue',
+                  weight: 1,
+                  fill: false,
+                  opacity: 0.8
                 }
+              ).addTo(this.markers);
             }
+          }
         }
     }
 }

@@ -380,7 +380,9 @@ entity.billboard.color = new Cesium.ConstantProperty(
     }
 
     private placeAsset(asset: any, lat: number, lng: number): void {
-        const entity = AssetFactory.create(asset, lat, lng);
+        const selectedTeam = this.filterService.getSelectedTeam();
+
+        const entity = AssetFactory.create(asset, lat, lng, selectedTeam);
         this.entityService.addEntity(entity);
         console.log('Placed:', entity);
     }
