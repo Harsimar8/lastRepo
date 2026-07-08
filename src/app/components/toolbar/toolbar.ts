@@ -7,6 +7,7 @@ import { ViewMode } from '../../core/enums/ViewMode';
 import { FilterService } from '../../services/filter.service';
 import { EntityType } from '../../core/enums/EntityType';
 import { Team } from '../../core/enums/Team';
+import { ScenarioService } from '../../services/scenario.service';
 
 @Component({
   selector: 'app-toolbar',
@@ -23,7 +24,8 @@ export class Toolbar {
   constructor(
   public simulationService: SimulationService,
   public assetLibraryService: AssetLibraryService,
-  public filterService: FilterService
+  public filterService: FilterService,
+    public scenarioService: ScenarioService
 ) {
 
   const saved = localStorage.getItem('assetLibrary');
