@@ -74,7 +74,20 @@
 <button (click)="scenarioService.saveScenario()">
     Save Scenario
 </button>
+<button (click)="scenarioService.clearScenario()">
+    Clear 
+</button>
+<input
+    #scenarioInput
+    type="file"
+    accept=".json"
+    hidden
+    (change)="onScenarioSelected($event)">
     <span class="spacer"></span>
+    <button (click)="scenarioInput.click()">
+    Load Scenario
+</button>
+
 
      <button (click)="simulationService.showSplit()">
     Split

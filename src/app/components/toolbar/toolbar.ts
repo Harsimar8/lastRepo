@@ -123,4 +123,17 @@ selectBlue(): void {
 selectRed(): void {
     this.filterService.setSelectedTeam(Team.Red);
 }
+onScenarioSelected(event: Event): void {
+
+    const input = event.target as HTMLInputElement;
+
+    if (!input.files?.length) {
+        return;
+    }
+
+    this.scenarioService.loadScenario(input.files[0]);
+
+    input.value = '';
+
+}
 }

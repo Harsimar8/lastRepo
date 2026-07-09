@@ -48,6 +48,51 @@ export class ScenarioService {
     URL.revokeObjectURL(url);
 
   }
+  loadScenario(file: File): void {
+
+  const reader = new FileReader();
+
+  reader.onload = () => {
+
+    try {
+
+      const scenario = JSON.parse(reader.result as string);
+
+      this.entityService.clear();
+
+      for (const entity of scenario.entities) {
+
+        this.entityService.addEntity(entity);
+
+      }
+
+      console.log("Scenario Loaded");
+
+    }
+    catch {
+
+      alert("Invalid Scenario File");
+
+    }
+
+  };
+
+  reader.readAsText(file);
 
 }
+clearScenario(): void {
+
+    if (!confirm("Clear the entire scenario?")) {
+        return;
+    }
+
+    this.entityService.clear();
+
+    console.log("Scenario Cleared");
+
+}
+
+}
+
+
 
